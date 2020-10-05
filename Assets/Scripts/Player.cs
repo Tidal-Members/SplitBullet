@@ -30,18 +30,48 @@ public class Player : Entity
             flying = noClip;
             CommandBackend.IncreaseOutputSize(CommandBackend.line);
             return "NoClip = "+noClip+"\nFlying = "+flying;
-        }, "Toggle player collisions and flying.");
+        }, "Toggle player collisions and flying.",CommandBackend.CommandType.Cheat);
         CommandBackend.AddConCommand("fly",(string[] args) =>
         {
             flying = !flying;
             return "Flying = "+flying;
-        }, "Toggle player flying.");
+        }, "Toggle player flying.",CommandBackend.CommandType.Cheat);
+        CommandBackend.AddConCommand("speed",(string[] args) =>
+        {
+            if(args == null || args.Length == 0)
+            {
+                CommandBackend.IncreaseOutputSize(CommandBackend.line);
+                return "Player speed is set to "+playerSpeed+".\nUsage: speed [float]";
+            }
+            else
+            {
+                playerSpeed = float.Parse(args[0]);
+                return "Desired speed has been set.";
+            }
+        }, "Sets the player speed.",CommandBackend.CommandType.Cheat);
+        CommandBackend.AddConCommand("jumpheight",(string[] args) =>
+        {
+            if(args == null || args.Length == 0)
+            {
+                CommandBackend.IncreaseOutputSize(CommandBackend.line);
+                return "Player jump height is set to "+jumpHeight+".\nUsage: jumpheight [float]";
+            }
+            else
+            {
+                jumpHeight = float.Parse(args[0]);
+                return "Desired jump height has been set.";
+            }
+        }, "Sets the player jump height.",CommandBackend.CommandType.Cheat);
     }
     // Update is called once per frame
     void Update()
     {
         if(CommandBackend.currentlyActive)
             return;
+        if(Input.GetButtonDown("Pause"))
+        {
+            CommandBackend.HandleConCommand("quit");
+        }
         if (health > 0 && !flying)
         {
             groundedPlayer = characterController.isGrounded;
@@ -69,7 +99,7 @@ public class Player : Entity
             if(noClip)
                 transform.position = new Vector3(transform.position.x+Input.GetAxis("Horizontal"),transform.position.y+Input.GetAxis("Vertical"));
             else
-                characterController.Move(moveDirection * Time.deltaTime);
+                characterController.Move(movingTo * Time.deltaTime * playerSpeed);
         }
         //mouse look vvv
 

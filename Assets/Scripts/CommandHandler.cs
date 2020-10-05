@@ -1,6 +1,9 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+#if UNITY_EDITOR
+using UnityEditor;
+#endif
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
@@ -9,34 +12,65 @@ public class ConCommand
     public Func<string[],string> callback;
     public string help = "No help available.";
     public float helpOutputIncrement = 65f;
-    public ConCommand(Func<string[],string> cb, string helpstring)
+    public CommandBackend.CommandType type;
+    public ConCommand(Func<string[],string> cb, string helpstring,CommandBackend.CommandType conType = CommandBackend.CommandType.Normal)
     {
         callback = cb;
         help = helpstring;
+        type = conType;
     }
 }
 public static class CommandBackend
 {
+    public enum CommandType
+    {
+        Normal,
+        Cheat,
+        Developer
+    }
     public static float consoleSize = 65f;
     public static float line = 65f;
     public static string consoleLog = "Type \"exit\" to exit this console window.";
     public static bool executing = false;
     public static bool currentlyActive = false;
+    public static CommandType allowedCommands = CommandType.Normal;
     public static Dictionary<string,ConCommand> commands = new Dictionary<string,ConCommand>();
-    public static void AddConCommand(string entry,Func<string[],string> command,string help = "No help available.")
+    public static void AddConCommand(string entry,Func<string[],string> command,string help = "No help available.",CommandBackend.CommandType conType = CommandBackend.CommandType.Normal)
     {
-        commands.Add(entry, new ConCommand(command,help));
+        commands.Add(entry, new ConCommand(command,help,conType));
     }
-    public static void HandleConCommand(string entry,string[] args)
+    public static void HandleConCommand(string entry,string[] args = null)
     {
         if(commands.ContainsKey(entry) && !executing)
         {
             executing = true;
             ConCommand command = commands[entry];
-            string executedCommandOutput = command.callback.Invoke(args);
-            if(executedCommandOutput != "")
+            switch(command.type)
             {
-                PrintOutput(executedCommandOutput);
+                case CommandBackend.CommandType.Cheat:
+                    if(CommandBackend.allowedCommands < CommandBackend.CommandType.Cheat)
+                        PrintOutput("Cheats must be enabled to use this command.");
+                    else
+                    {
+                        string executedOutput = command.callback.Invoke(args);
+                        if(executedOutput != "")
+                            PrintOutput(executedOutput);
+                    }
+                    break;
+                case CommandBackend.CommandType.Developer:
+                    if(CommandBackend.allowedCommands >= CommandBackend.CommandType.Developer)
+                    {
+                        string commandOutput = command.callback.Invoke(args);
+                        if(commandOutput != "")
+                            PrintOutput(commandOutput);
+                    }
+                    PrintOutput("This command is only available within the editor.");
+                    break;
+                default:
+                    string executedCommandOutput = command.callback.Invoke(args);
+                    if(executedCommandOutput != "")
+                        PrintOutput(executedCommandOutput);
+                    break;
             }
             executing = false;
         }
@@ -72,10 +106,12 @@ public class CommandHandler : MonoBehaviour
         consoleLog = consoleWindow.Find("Scroll View").Find("Viewport").Find("Content").Find("Text").GetComponent<Text>();
         consoleInput = consoleWindow.Find("InputField").GetComponent<InputField>();
     }
+    #if UNITY_EDITOR
     [UnityEditor.Callbacks.DidReloadScripts]
     private static void OnScriptsReloaded() {
         Debug.Log("CommandHandler has been reloaded! Commands will not be available until play mode is restarted.");
     }
+    #endif
     public void Start()
     {
         CommandBackend.AddConCommand("help",(string[] args) =>
@@ -86,8 +122,11 @@ public class CommandHandler : MonoBehaviour
                 helpmenu = "Commands:";
                 foreach(KeyValuePair<string,ConCommand> conCommand in CommandBackend.commands)
                 {
-                    helpmenu += "\n- "+conCommand.Key;
-                    CommandBackend.IncreaseOutputSize(CommandBackend.line);
+                    if(conCommand.Value.type <= CommandBackend.allowedCommands)
+                    {
+                        helpmenu += "\n- "+conCommand.Key;
+                        CommandBackend.IncreaseOutputSize(CommandBackend.line);
+                    }
                 }
                 helpmenu += "\nUsage: help [string]";
             }
@@ -104,8 +143,17 @@ public class CommandHandler : MonoBehaviour
             CommandBackend.currentlyActive = false;
             return "Exiting console window...";
         }, "Exits the console window.");
+        CommandBackend.AddConCommand("quit",(string[] args) =>
+        {
+            Application.Quit();
+            #if UNITY_EDITOR
+            EditorApplication.ExitPlaymode();
+            #endif
+            return "Successfuly quit the game.";
+        }, "Quits the game.");
         CommandBackend.AddConCommand("clear",(string[] args) =>
         {
+            CommandBackend.consoleLog = "";
             consoleLog.text = "";
             CommandBackend.SetOutputSize(CommandBackend.line);
             return "Type \"exit\" to exit this console window.";
@@ -114,7 +162,7 @@ public class CommandHandler : MonoBehaviour
         {
             if(args == null || args.Length == 0)
             {
-                CommandBackend.SetOutputSize(CommandBackend.line);
+                CommandBackend.IncreaseOutputSize(CommandBackend.line);
                 return "Font size is set to "+consoleLog.fontSize+".\nUsage: fontsize [int]";
             }
             else
@@ -140,6 +188,28 @@ public class CommandHandler : MonoBehaviour
             else
                 return "Map index "+index+" is out of range!";
         }, "Loads the next map in order.");
+        CommandBackend.AddConCommand("allowcheats",(string[] args) =>
+        {
+            if(CommandBackend.allowedCommands < CommandBackend.CommandType.Cheat)
+            {
+                CommandBackend.allowedCommands = CommandBackend.CommandType.Cheat;
+                return "Cheats have been enabled.";
+            }
+            else
+                return "The allowed commands are set to a higher enum than the parameter.";
+        }, "Activates cheats.");
+        #if UNITY_EDITOR
+        CommandBackend.AddConCommand("allowdev",(string[] args) =>
+        {
+            if(CommandBackend.allowedCommands < CommandBackend.CommandType.Developer)
+            {
+                CommandBackend.allowedCommands = CommandBackend.CommandType.Developer;
+                return "Developer mode has been enabled.";
+            }
+            else
+                return "The allowed commands are set to a higher enum than the parameter.";
+        }, "Activates developer mode.");
+        #endif
     }
     public void Update()
     {
