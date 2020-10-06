@@ -4,6 +4,23 @@ using UnityEngine;
 [DefaultExecutionOrder(-100)]
 public class Player : Entity
 {
+    public enum PlayerState
+    {
+        Idle,
+        Falling,
+        Walk,
+        AirWalk,
+        Jumping
+    }
+    public enum PlayerDirection
+    {
+        RightForward,
+        RightUp,
+        RightDown,
+        LeftForward,
+        LeftUp,
+        LeftDown
+    }
     private Vector3 playerVelocity;
     private bool groundedPlayer;
     private float playerSpeed = 2.0f;
@@ -15,6 +32,10 @@ public class Player : Entity
     private Vector3 moveDirection = Vector3.zero;
     private CharacterController characterController;
     private Transform lookAtObject;
+    public GameObject characterSprite;
+    public SharedEnums.HoldType holdState = SharedEnums.HoldType.None;
+    public PlayerDirection direction = PlayerDirection.LeftForward;
+    public PlayerState state = PlayerState.Idle;
     /*void Awake()
     {
         ticks += Tick;
@@ -69,9 +90,19 @@ public class Player : Entity
         if(CommandBackend.currentlyActive)
             return;
         if(Input.GetButtonDown("Pause"))
-        {
             CommandBackend.HandleConCommand("quit");
-        }
+        //player states
+        Debug.Log(playerVelocity.y);
+        if(Input.GetAxis("Horizontal") != 0 && playerVelocity.y >= -0.5f && playerVelocity.y < -0f)
+            state = PlayerState.Walk;
+        else if(!groundedPlayer && playerVelocity.y > 0.5f)
+            state = PlayerState.Jumping;
+        else if(Input.GetAxis("Horizontal") != 0 && playerVelocity.y <= -0.5f && !groundedPlayer)
+            state = PlayerState.AirWalk;
+        else if(Input.GetAxis("Horizontal") == 0 && playerVelocity.y <= -0.5f && !groundedPlayer)
+            state = PlayerState.Falling;
+        else if(playerVelocity.y >= -0.5f && playerVelocity.y < -0f) state = PlayerState.Idle;
+        //movement
         if (health > 0 && !flying)
         {
             groundedPlayer = characterController.isGrounded;
@@ -115,6 +146,19 @@ public class Player : Entity
             angle = 25f;
         else if(angle < 150f && angle > 90f)
             angle = 150f;
+        //anim
+        if(angle > 10f && angle < 90f)
+            direction = PlayerDirection.LeftDown;
+        else if(angle >= -15f && angle < 10f)
+            direction = PlayerDirection.LeftForward;
+        else if(angle > -90f && angle < -15f)
+            direction = PlayerDirection.LeftUp;
+        else if(angle >= -150f && angle < -90f)
+            direction = PlayerDirection.RightUp;
+        else if(angle > -180f && angle < -150f)
+            direction = PlayerDirection.RightForward;
+        else if(angle < 180f && angle > 90f)
+            direction = PlayerDirection.RightDown;
         //Ta Daaa
         lookAtObject.rotation =  Quaternion.Euler(new Vector3(0f,0f,angle));
     }

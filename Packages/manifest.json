@@ -3,6 +3,7 @@
     "com.unity.cinemachine": "2.3.4",
     "com.unity.ide.rider": "1.1.4",
     "com.unity.ide.vscode": "1.2.2",
+    "com.unity.localization": "0.8.1-preview",
     "com.unity.render-pipelines.universal": "7.3.1",
     "com.unity.test-framework": "1.1.16",
     "com.unity.timeline": "1.2.17",
@@ -17,6 +18,10 @@
     "com.unity.modules.physics": "1.0.0",
     "com.unity.modules.physics2d": "1.0.0",
     "com.unity.modules.uielements": "1.0.0",
-    "com.unity.modules.umbra": "1.0.0"
+    "com.unity.modules.umbra": "1.0.0",
+    "com.unity.modules.unitywebrequest": "1.0.0",
+    "com.unity.modules.unitywebrequestassetbundle": "1.0.0",
+    "com.unity.modules.unitywebrequesttexture": "1.0.0",
+    "com.unity.modules.unitywebrequestwww": "1.0.0"
   }
 }
