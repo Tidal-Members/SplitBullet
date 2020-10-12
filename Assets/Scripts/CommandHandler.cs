@@ -105,10 +105,12 @@ public class CommandHandler : MonoBehaviour
         consoleWindow = transform.Find("Console");
         consoleLog = consoleWindow.Find("Scroll View").Find("Viewport").Find("Content").Find("Text").GetComponent<Text>();
         consoleInput = consoleWindow.Find("InputField").GetComponent<InputField>();
+        consoleWindow.gameObject.SetActive(false);
     }
     #if UNITY_EDITOR
     [UnityEditor.Callbacks.DidReloadScripts]
-    private static void OnScriptsReloaded() {
+    private static void OnScriptsReloaded()
+    {
         Debug.Log("CommandHandler has been reloaded! Commands will not be available until play mode is restarted.");
     }
     #endif
