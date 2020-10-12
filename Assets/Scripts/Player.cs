@@ -101,6 +101,16 @@ public class Player : Entity
             lookScript.activeWeapon.Fire();
             StartCoroutine(WeaponCooldown());
         }
+        // If player is moving up, ignore collisions between player and platforms
+        if (characterController.velocity.y > 0)
+        {
+            Physics.IgnoreLayerCollision(9, 10, true);
+        }
+        //else the collision will not be ignored
+        else
+        {
+            Physics.IgnoreLayerCollision(9, 10, false);
+        }
         //personality
         switch(personality)
         {
