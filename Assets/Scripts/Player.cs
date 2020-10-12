@@ -21,11 +21,6 @@ public class Player : Entity
         LeftUp,
         LeftDown
     }
-    public enum Personality
-    {
-        Uno,
-        Dos
-    }
     private Vector3 playerVelocity;
     private bool groundedPlayer;
     private float playerSpeed = 2.0f;
@@ -34,23 +29,22 @@ public class Player : Entity
     public float zPosition = 0f;
     public bool noClip = false;
     public bool flying = false;
-    public bool cooldown = false;
     private Vector3 moveDirection = Vector3.zero;
     private CharacterController characterController;
-    public Look lookScript;
-    public SpriteRenderer playerSprite;
+    private Transform lookAtObject;
+    public GameObject characterSprite;
     public SharedEnums.HoldType holdState = SharedEnums.HoldType.None;
     public PlayerDirection direction = PlayerDirection.LeftForward;
     public PlayerState state = PlayerState.Idle;
-    public Personality personality = Personality.Uno;
-    void Awake()
+    /*void Awake()
     {
-        characterController = transform.GetComponent<CharacterController>();
-        lookScript = transform.Find("Look").GetComponent<Look>();
-        playerSprite = transform.GetComponent<SpriteRenderer>();
-    }
+        ticks += Tick;
+        ticksStart += TickStart;
+    }*/
     void Start()
     {
+        characterController = transform.GetComponent<CharacterController>();
+        lookAtObject = transform.Find("Look");
         CommandBackend.AddConCommand("noclip",(string[] args) =>
         {
             noClip = !noClip;
@@ -97,39 +91,8 @@ public class Player : Entity
             return;
         if(Input.GetButtonDown("Pause"))
             CommandBackend.HandleConCommand("quit");
-        if(Input.GetButton("Fire1") && !cooldown) {
-            lookScript.activeWeapon.Fire();
-            StartCoroutine(WeaponCooldown());
-        }
-        // If player is moving up, ignore collisions between player and platforms
-        if (characterController.velocity.y > 0)
-        {
-            Physics.IgnoreLayerCollision(9, 10, true);
-        }
-        //else the collision will not be ignored
-        else
-        {
-            Physics.IgnoreLayerCollision(9, 10, false);
-        }
-        //personality
-        switch(personality)
-        {
-            default: //assume personality is first one by default
-                playerSprite.color = Color.green;
-                break;
-            case Personality.Dos:
-                playerSprite.color = Color.magenta;
-                break;
-        }
-        //If we hit something above us AND we are moving up, reverse vertical movement
-        if ((characterController.collisionFlags & CollisionFlags.Above) != 0)
-        {
-            if (playerVelocity.y > 0)
-            {
-                playerVelocity.y = 0;
-            }
-        }
         //player states
+        Debug.Log(playerVelocity.y);
         if(Input.GetAxis("Horizontal") != 0 && playerVelocity.y >= -0.5f && playerVelocity.y < -0f)
             state = PlayerState.Walk;
         else if(!groundedPlayer && playerVelocity.y > 0.5f)
@@ -150,18 +113,16 @@ public class Player : Entity
 
             Vector3 move = new Vector3(Input.GetAxis("Horizontal"), 0, 0);
             characterController.Move(move * Time.deltaTime * playerSpeed);
-            /*if (transform.position.z != zPosition)
+            if (transform.position.z != zPosition)
             {
-                //enter the tidal zone-style smooth z positioning v
                 move.z = (zPosition - transform.position.z);
-            }*/
+            }
             if (Input.GetButton("Jump") && groundedPlayer)
             {
                 playerVelocity.y += Mathf.Sqrt(jumpHeight * -3.0f * gravityValue);
             }
             playerVelocity.y += gravityValue * Time.deltaTime;
             characterController.Move(playerVelocity * Time.deltaTime);
-            transform.position = new Vector3(transform.position.x,transform.position.y,0f);
         }
         else if(flying)
         {
@@ -174,18 +135,17 @@ public class Player : Entity
         //mouse look vvv
 
         //Get the Screen positions of the object
-        Vector2 positionOnScreen = Camera.main.WorldToViewportPoint (lookScript.transform.position);
+        Vector2 positionOnScreen = Camera.main.WorldToViewportPoint (lookAtObject.position);
 
         //Get the Screen position of the mouse
         Vector2 mouseOnScreen = (Vector2)Camera.main.ScreenToViewportPoint(Input.mousePosition);
 
         //Get the angle between the points
         float angle = AngleBetweenTwoPoints(positionOnScreen, mouseOnScreen);
-        //this locked the position when you look down so you can't do a shot under yourself, got annoying v
-        /*if(angle > 25f && angle < 90f)
+        if(angle > 25f && angle < 90f)
             angle = 25f;
         else if(angle < 150f && angle > 90f)
-            angle = 150f;*/
+            angle = 150f;
         //anim
         if(angle > 10f && angle < 90f)
             direction = PlayerDirection.LeftDown;
@@ -200,32 +160,9 @@ public class Player : Entity
         else if(angle < 180f && angle > 90f)
             direction = PlayerDirection.RightDown;
         //Ta Daaa
-        lookScript.transform.rotation =  Quaternion.Euler(new Vector3(0f,0f,angle));
-
-        switch(direction)
-        {
-            case PlayerDirection.RightForward:
-                lookScript.weaponSprite.flipY = true;
-                break;
-            case PlayerDirection.RightUp:
-                lookScript.weaponSprite.flipY = true;
-                break;
-            case PlayerDirection.RightDown:
-                lookScript.weaponSprite.flipY = true;
-                break;
-            default:
-                lookScript.weaponSprite.flipY = false;
-                break;
-        }
+        lookAtObject.rotation =  Quaternion.Euler(new Vector3(0f,0f,angle));
     }
     float AngleBetweenTwoPoints(Vector3 a, Vector3 b) {
         return Mathf.Atan2(a.y - b.y, a.x - b.x) * Mathf.Rad2Deg;
-    }
-    public IEnumerator WeaponCooldown()
-    {
-        cooldown = true;
-        yield return new WaitForSeconds(lookScript.activeWeapon.weaponCooldown);
-        cooldown = false;
-        yield return null;
     }
 }

@@ -3,10 +3,7 @@ guid: 1d90699750b464e4b94e484d72b0c44e
 MonoImporter:
   externalObjects: {}
   serializedVersion: 2
-  defaultReferences:
-  - bucketIcon: {fileID: 21300000, guid: 912b97bc5eceb8947ab3b8d6c0adaa55, type: 3}
-  - selectedIcon: {fileID: 21300000, guid: d6d5dd88e3455c742a4be007115a2273, type: 3}
-  - handSprite: {fileID: 21300000, guid: 3ff2d2395612feb438e9fb443566287c, type: 3}
+  defaultReferences: []
   executionOrder: 0
   icon: {instanceID: 0}
   userData: 
