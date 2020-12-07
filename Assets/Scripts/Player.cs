@@ -172,7 +172,6 @@ public class Player : Entity
                 characterController.Move(movingTo * Time.deltaTime * playerSpeed);
         }
         //mouse look vvv
-
         //Get the Screen positions of the object
         Vector2 positionOnScreen = Camera.main.WorldToViewportPoint (lookScript.transform.position);
 

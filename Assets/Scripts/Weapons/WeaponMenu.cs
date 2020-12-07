@@ -6,7 +6,7 @@ using UnityEngine;
 public class WeaponMenu : MonoBehaviour
 {
     public Transform menu;
-    private bool menuActive = false;
+    public bool menuActive = false;
     private float fixedDeltaTime;
     public Image img;
     void Awake()
@@ -16,19 +16,19 @@ public class WeaponMenu : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        img.color = new Color(1, 1, 1, 0);
+         menu.gameObject.SetActive(false);
     }
 
     // Update is called once per frame
     void Update()
     {
         if(Input.GetButtonDown("Fire2")){
-            Time.timeScale = 0.25f;
-            FadeImage(false);
+            Time.timeScale = 0.05f;
+            menu.gameObject.SetActive(true);
             menuActive = true;
         } else if(Input.GetButtonUp("Fire2")){
             Time.timeScale = 1.0f;
-            FadeImage(true);
+            menu.gameObject.SetActive(false);
             menuActive = false;
         }
     }
