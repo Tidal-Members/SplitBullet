@@ -10,5 +10,5 @@
 </p>
 ## Credits
 <p>
-  See <a href="https://github.com/Tidal-Members/SplitBullet/CREDITS.md>CREDITS.md</a> for the credits.
+  <a href="https://github.com/Tidal-Members/SplitBullet/CREDITS.md>See CREDITS.md for the credits.</a>
 </p>
