@@ -1046,6 +1046,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 945b264ba9252184ca2460cd33dc7fdf, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  guns: {fileID: 0}
+  music: {fileID: 1019850158}
 --- !u!1 &1810505381
 GameObject:
   m_ObjectHideFlags: 0
