@@ -1,6 +1,6 @@
 # Verified Credits
 
-## Director:
+## Directors:
 | Name | Message |
 | --- | --- |
 | TeamPopplio	| I am glad to be here, people are awesome! |
