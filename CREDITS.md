@@ -7,6 +7,7 @@
 | nuppington | thanks guys :) |
 
 ## Supporters:
+| Name | Message |
 | <a><img src="https://raw.githubusercontent.com/Tidal-Members/SplitBullet/master/!!Supporter!!%20Hyper_Nov4.svg"/></a> | follow me on twitch pls @Hyper_Nov4#9999 |
 ## Moderators:
 
