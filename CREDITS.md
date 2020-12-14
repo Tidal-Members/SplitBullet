@@ -7,7 +7,7 @@
 | nuppington | thanks guys :) |
 
 ## Supporters:
-<a><img src="https://raw.githubusercontent.com/Tidal-Members/SplitBullet/master/!!Supporter!!%20Hyper_Nov4.svg"/></a> follow me on twitch pls @Hyper_Nov4#9999
+<a><img src="https://raw.githubusercontent.com/Tidal-Members/SplitBullet/master/!!Supporter!!%20Hyper_Nov4.svg"/></a> follow me on twitch pls @Hyper_Nov4
 ## Moderators:
 
 | Name | Message |
