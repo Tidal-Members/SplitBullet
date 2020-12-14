@@ -38,6 +38,7 @@ public class Player : Entity
     private Vector3 moveDirection = Vector3.zero;
     private CharacterController characterController;
     public Look lookScript;
+    public WeaponMenu WeaponGUI;
     public SpriteRenderer playerSprite;
     public SharedEnums.HoldType holdState = SharedEnums.HoldType.None;
     public PlayerDirection direction = PlayerDirection.LeftForward;
@@ -97,7 +98,7 @@ public class Player : Entity
             return;
         if(Input.GetButtonDown("Pause"))
             CommandBackend.HandleConCommand("quit");
-        if(Input.GetButton("Fire1") && !cooldown) {
+        if(Input.GetButton("Fire1") && !cooldown && !WeaponGUI.menuActive) {
             lookScript.activeWeapon.Fire();
             StartCoroutine(WeaponCooldown());
         }
