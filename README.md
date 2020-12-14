@@ -7,5 +7,6 @@
   <img alt="GitHub last commit" src="https://img.shields.io/github/last-commit/Tidal-Members/SplitBullet">
   </p>
 </p>
+</p>
 ## Credits
 See [CREDITS.md](CREDITS.md) and [ATTRIBUTED.md](ATTRIBUTED.md).
