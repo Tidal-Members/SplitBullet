@@ -9,4 +9,5 @@
 </p>
 </p>
 ## Credits
-See [CREDITS.md](CREDITS.md).
+<p>
+  See <a href="https://github.com/Tidal-Members/SplitBullet/CREDITS.md>CREDITS.md</a> for the credits.
